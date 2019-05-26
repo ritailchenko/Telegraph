@@ -1,4 +1,14 @@
+
 {{#each posts}}
-    {{title}}
+<div class="wrap">
+    <div class="article">
+        <h2><a href="{{link}}">{{title}}</a></h2>
+        <p>{{description}}</p>
+        <button class="btn btn-success">Save Article</button>
+    </div>
+    <div class="alert alert-primary" role="alert" style="display: none">
+      Your article is saved!
+    </div>
+</div>
 {{/each}}
 

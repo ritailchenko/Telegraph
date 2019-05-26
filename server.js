@@ -36,50 +36,40 @@ mongoose.connect("mongodb://rita:135038724Denver@ds145926.mlab.com:45926/heroku_
 
 // Routes
 
-// A GET route for scraping the echoJS website
 app.get("/home", function(req, res) {
-  // First, we grab the body of the html with axios
-  axios.get("https://www.newyorker.com/").then(function(response) {
-    // Then, we load that into cheerio and save it to $ for a shorthand selector
-    var $ = cheerio.load(response.data);
-    var posts = [];
-    console.log(response)
-    // Now, we grab every h2 within an article tag, and do the following:
-    $("[data-post-id] a").each(function(i, element) {
-      // Save an empty result object
-      var result = {};
-      console.log($(this))
-      // Add the text and href of every link, and save them as properties of the result object
-      result.title = $(this)
-        .children("h3")
-        .text();
-      result.link = $(this)
-        .attr("href");
-      result.description = $(this)
-        .children("h3+div>div")
-        .text();
-
-        posts.push(result);
-
-      // Create a new Article using the `result` object built from scraping
-      // db.Article.create(result)
-      //   .then(function(dbArticle) {
-      //     // View the added result in the console
-      //     console.log(dbArticle);
-      //   })
-      //   .catch(function(err) {
-      //     // If an error occurred, log it
-      //     console.log(err);
-      //   });
+  var posts = [];
+  if(req.query.scrape) {
+    axios.get("http://travelbloggercommunity.com/").then(function(response) {
+      // Then, we load that into cheerio and save it to $ for a shorthand selector
+      var $ = cheerio.load(response.data);
+      
+      $("article").each(function(i, element) {
+        var result = {};
+        const titleLink = $(this)
+          .find(".entry-title a");
+        result.title = titleLink
+          .text();
+        result.link = titleLink
+          .attr("href");
+        result.description = $(this)
+          .find(".entry-content p")
+          .text();
+  
+          posts.push(result);
+  
+      });
+  
+      var hbsObject = {
+        posts: posts
+      };
+      res.render("home", hbsObject);
     });
-
-    // Send a message to the client
+  } else {
     var hbsObject = {
       posts: posts
     };
-    console.log(hbsObject);
     res.render("home", hbsObject);
-  });
+  }
 });
 
 // Route for getting all Articles from the db
