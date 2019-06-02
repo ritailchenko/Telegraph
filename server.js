@@ -91,11 +91,11 @@ app.get("/saved", function (req, res) {
 // Route for saving/updating an Article's associated Note
 app.post("/api/article", function (req, res) {
   // Create a new note and pass the req.body to the entry
-  db.Article.findOne({ title: req.body.title}, {text: req.body.text})
+  db.Article.findOne({ title: req.body.title })
     .then(function (dbArticle) {
       if (!dbArticle) {
         // req.body.text = "Just testing this out"
-           
+        console.log(req.body)   
         db.Article.create(req.body)
           .then(function (dbArticle) {
             res.json(dbArticle);
